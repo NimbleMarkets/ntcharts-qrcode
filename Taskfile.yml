@@ -1,0 +1,144 @@
+# ntcharts-qrcode - Copyright (c) 2026 Neomantra Corp.
+
+version: '3'
+
+tasks:
+  default:
+    desc: 'Default task runs the "test" and "build" tasks'
+    deps:
+      - test
+      - build
+
+  list:
+    desc: 'Lists available tasks'
+    cmds:
+      - task --list-all
+
+###############################################################################
+
+  go-tidy:
+    desc: 'Go tidy all the things'
+    run: once
+    cmds:
+      - go mod tidy
+
+  go-update:
+    desc: 'Go update all the dependencies'
+    run: once
+    cmds:
+      - go get -u ./...
+
+  test:
+    desc: 'Run all Go tests, including the downstream consumer regression'
+    cmds:
+      - go test -mod=readonly ./...
+
+  test-race:
+    desc: 'Run all Go tests with the race detector'
+    cmds:
+      - go test -mod=readonly -race ./...
+
+  vet:
+    desc: 'Run go vet'
+    cmds:
+      - go vet -mod=readonly ./...
+
+  build:
+    desc: 'Build all the things'
+    deps:
+      - build-examples
+
+  clean:
+    desc: 'Clean built examples and generated demo assets'
+    deps:
+      - clean-wasm-site
+    cmds:
+      - rm -f bin/ntcharts-qrcode
+      - rm -rf .task
+
+###############################################################################
+# Examples
+
+  build-examples:
+    desc: 'Build all examples'
+    deps:
+      - build-ex-qrcode
+
+  build-ex-qrcode:
+    desc: 'Build the two-code terminal example'
+    cmds:
+      - go build -mod=readonly -o bin/ntcharts-qrcode ./examples/qrcode
+    sources:
+      - qrcode/**/*.go
+      - examples/qrcode/*.go
+      - go.mod
+      - go.sum
+    generates:
+      - bin/ntcharts-qrcode
+
+###############################################################################
+# Demo website via booba
+
+  build-wasm-site:
+    desc: 'Build the WASM demo site into web/'
+    cmds:
+      - GOWORK="$PWD/wasm.work" GOARCH=wasm GOOS=js go build -mod=readonly -o web/app.wasm ./examples/qrcode
+      - go tool booba-assets web/
+      - cp LICENSE.txt THIRD_PARTY_NOTICES.md web/booba/
+    generates:
+      - web/app.wasm
+
+  serve-wasm-site:
+    desc: 'Serve web/ at http://localhost:8000/ntcharts-qrcode/ (matches GH Pages prefix)'
+    deps:
+      - build-wasm-site
+    vars:
+      SERVE_DIR: /tmp/ntcharts-qrcode-site
+    cmds:
+      - mkdir -p "{{.SERVE_DIR}}"
+      - ln -sfn "$PWD/web" "{{.SERVE_DIR}}/ntcharts-qrcode"
+      - python3 -m http.server 8000 --directory "{{.SERVE_DIR}}"
+
+  clean-wasm-site:
+    desc: 'Remove generated WASM demo site artifacts'
+    cmds:
+      - rm -rf web/booba web/ghostty-web
+      - rm -f web/wasm_exec.js web/app.wasm
+
+###############################################################################
+# Dependency notices and verification
+
+  notices:
+    desc: 'Regenerate notices for native and WASM demo dependencies'
+    cmds:
+      - go run ./internal/tools/notices > THIRD_PARTY_NOTICES.md
+
+  notices-check:
+    desc: 'Verify that dependency notices are current'
+    cmds:
+      - go run ./internal/tools/notices | cmp -s - THIRD_PARTY_NOTICES.md
+
+  vuln:
+    desc: 'Scan native and WASM dependencies for known vulnerabilities (requires network)'
+    vars:
+      GOVULNCHECK_VERSION: v1.8.0
+    cmds:
+      # Build a host executable first: setting GOOS=js during go run/tool
+      # would build the scanner itself for WASM instead of scanning WASM code.
+      - GOWORK=off GOOS= GOARCH= GOBIN="$PWD/.task/bin" go install golang.org/x/vuln/cmd/govulncheck@{{.GOVULNCHECK_VERSION}}
+      - GOWORK=off .task/bin/govulncheck -test ./...
+      - GOWORK="$PWD/wasm.work" GOOS=js GOARCH=wasm .task/bin/govulncheck ./...
+
+  ci:
+    desc: 'Check formatting, dependencies, tests, builds, and known vulnerabilities'
+    cmds:
+      - test -z "$(gofmt -l qrcode examples internal)"
+      - go mod tidy -diff
+      - go mod verify
+      - task: test-race
+      - task: vet
+      - GOOS=windows GOARCH=amd64 go build -mod=readonly -o /dev/null ./...
+      - task: build
+      - task: build-wasm-site
+      - task: notices-check
+      - task: vuln
