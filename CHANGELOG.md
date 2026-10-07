@@ -1,6 +1,6 @@
 # `ntcharts-qrcode` CHANGELOG
 
-## Unreleased
+## v0.1.0 (2026-10-06)
 
 Initial release. `ntcharts-qrcode` encodes QR codes and presents them inside
 an existing Bubble Tea v2 event loop — with Kitty graphics or explicit
