@@ -833,7 +833,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## github.com/piglig/go-qr v1.1.0
+## github.com/piglig/go-qr/v2 v2.3.0
 
 ```
 MIT License

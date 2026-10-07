@@ -12,7 +12,7 @@ require (
 	github.com/charmbracelet/ultraviolet v0.0.0-20260928045949-bbf040aedf25
 	github.com/charmbracelet/x/ansi v0.11.8
 	github.com/makiuchi-d/gozxing v0.1.1
-	github.com/piglig/go-qr v1.1.0
+	github.com/piglig/go-qr/v2 v2.3.0
 )
 
 require (

@@ -65,7 +65,7 @@ bounded to 2,048-pixel edges, 256 Kitty cells per axis, or 65,536 glyph cells.
 
 Encoder review (October 2026):
 
-- [piglig/go-qr](https://github.com/piglig/go-qr) v1.1.0 is the encoder:
+- [piglig/go-qr](https://github.com/piglig/go-qr) v2.3.0 is the encoder:
   MIT-licensed pure Go with no external runtime dependencies, implementing QR
   Model 2 versions 1–40, four correction levels, optimized mixed-mode
   segmentation, mask selection, and Reed–Solomon correction. It is a young,
@@ -74,13 +74,15 @@ Encoder review (October 2026):
   skip2/go-qrcode (decode round-trips plus symbol sizes, 176 cases) matched.
   We use only its segment/matrix API and own the quiet zone, bounded image,
   and terminal presentation layers.
-- Its v1.1.0 `MakeSegmentsOptimally` can hang during multi-version searches
-  (capacity is only checked at versions 1/10/27). `qrcode/segments.go` calls it
-  with an exact version at the end of each character-count range (1–9,
-  10–26, 27–40), then uses the bounded `EncodeSegments` search within that
-  range. This requires at most three segmentation passes and respects
-  caller-supplied version bounds. There is no encoder `replace` directive:
-  the fix ships in this library, so downstream consumers receive it too.
+- The encoder is pinned to the upstream v2.3.0 release, which includes the
+  version-search fix from [PR #100](https://github.com/piglig/go-qr/pull/100).
+  No encoder fork or `replace` directive is needed. V2 makes its optimizer
+  private, so `qrcode/segments_optimal.go` adapts its MIT-licensed dynamic
+  program for safe runs using public segment constructors. We retain at most
+  three segmentation passes across character-count ranges (1–9, 10–26,
+  27–40), then perform a bounded `EncodeSegments` search that includes our
+  UTF-8 ECI header and respects caller-supplied version bounds. A differential
+  test compares safe-payload versions and correction levels with upstream v2.
 - Its Kanji table has seven Unicode mappings that differ from common
   Shift-JIS decoders: backslash, `¢`, `£`, `¬`, `‖`, `−`, and `〜`. We split
   around those characters and encode them in byte mode, preserving optimized

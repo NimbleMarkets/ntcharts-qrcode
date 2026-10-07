@@ -1,6 +1,6 @@
 // Package qrcode encodes QR symbols and presents them inside an existing
 // Bubble Tea event loop. It owns no terminal, input stream, or file output.
-// Encoding of images is thanks to github.com/piglig/go-qr
+// Encoding of images is thanks to github.com/piglig/go-qr/v2
 package qrcode
 
 import (
@@ -10,7 +10,7 @@ import (
 	"image/color"
 	"unicode/utf8"
 
-	encoder "github.com/piglig/go-qr"
+	encoder "github.com/piglig/go-qr/v2"
 )
 
 // Level selects the minimum error correction. Medium (M, approximately 15%
@@ -54,7 +54,7 @@ type Options struct {
 type Code struct{ modules [][]bool }
 
 func Encode(content string, opts Options) (*Code, error) {
-	levels := [...]encoder.Ecc{encoder.Medium, encoder.Low, encoder.Quartile, encoder.High}
+	levels := [...]encoder.ECC{encoder.ECCMedium, encoder.ECCLow, encoder.ECCQuartile, encoder.ECCHigh}
 	if int(opts.Level) >= len(levels) {
 		return nil, fmt.Errorf("invalid QR correction level %d", opts.Level)
 	}

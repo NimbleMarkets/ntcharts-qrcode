@@ -1,5 +1,11 @@
 # `ntcharts-qrcode` CHANGELOG
 
+## Unreleased
+
+* Upgrade to piglig/go-qr/v2 v2.3.0, including the version-search fix.
+  Adapt segmentation to its new API while preserving ambiguous-Kanji byte
+  encoding, UTF-8 ECI, version bounds, and correction boosting.
+
 ## v0.1.0 (2026-10-06)
 
 Initial release. `ntcharts-qrcode` encodes QR codes and presents them inside
