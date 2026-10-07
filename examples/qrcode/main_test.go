@@ -102,3 +102,36 @@ func TestTwoComponentsThroughPublicAPI(t *testing.T) {
 		}
 	}
 }
+
+// A QR that qr.SetSize accepted must survive the host's pane layout unwrapped.
+// lipgloss v2 widths include the border, so the pane must hand the QR the width
+// that remains inside it. Sweep widths so every code meets its exact limit.
+func TestPaneLayoutNeverWrapsAFittedQR(t *testing.T) {
+	for _, solid := range []string{"0", "1"} {
+		t.Run("solid="+solid, func(t *testing.T) {
+			t.Setenv("TERM_PROGRAM", "")
+			t.Setenv("NTCHARTS_QRCODE_SOLID", solid)
+			m := newModel()
+			fitted := 0
+			for width := 20; width <= 220; width++ {
+				_, cmd := m.Update(tea.WindowSizeMsg{Width: width, Height: 90})
+				pump(m, cmd)
+				content := m.View().Content
+				for i, qr := range m.codes {
+					if qr == nil || qr.Err() != nil {
+						continue
+					}
+					fitted++
+					for _, row := range strings.Split(qr.View(), "\n") {
+						if !strings.Contains(content, row) {
+							t.Fatalf("width %d: QR %d row wrapped or altered by the pane layout", width, i+1)
+						}
+					}
+				}
+			}
+			if fitted == 0 {
+				t.Fatal("sweep never fitted a QR")
+			}
+		})
+	}
+}

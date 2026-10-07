@@ -130,7 +130,7 @@ func (m *model) View() tea.View {
 			address = addresses[m.selected]
 		}
 		lines := fmt.Sprintf("QR %d\n%s\n%s", i+1, content, ansi.Truncate(address, inner, "…"))
-		panes = append(panes, lipgloss.NewStyle().Width(inner).Height(m.height-4).
+		panes = append(panes, lipgloss.NewStyle().Width(m.paneWidth()).Height(m.height-4).
 			Border(lipgloss.RoundedBorder()).Render(lines))
 	}
 	body := panes[0]
