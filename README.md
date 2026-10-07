@@ -6,18 +6,49 @@
     <a href="./CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code Of Conduct"></a>
 </p>
 
-`ntcharts-qrcode` is an experimental [NTCharts](https://github.com/NimbleMarkets/ntcharts)
-companion for [Bubble Tea v2](https://github.com/charmbracelet/bubbletea).
-It follows the companion [ntcharts-osm](https://github.com/NimbleMarkets/ntcharts-osm),
-[ntcharts-svg](https://github.com/NimbleMarkets/ntcharts-svg), and
-[ntcharts-pdf](https://github.com/NimbleMarkets/ntcharts-pdf) project conventions.
-It encodes QR codes, exposes their module matrix and image, and displays them
-with Kitty graphics or explicit black/white Unicode half-blocks.
-Developed and used in [gloss](https://github.com/NimbleMarkets/gloss).
+Show QR codes in your [Bubble Tea](https://github.com/charmbracelet/bubbletea)
+app, or generate them as images. `ntcharts-qrcode` uses Kitty graphics where
+available and Unicode blocks everywhere else.
 
-The host owns terminal detection, the event loop, layout, and image IDs.
-The component never reads stdin or probes the terminal. If the complete QR
-and its four-module quiet zone cannot fit, it returns a fit error.
+[go-qr](https://github.com/piglig/go-qr) does the QR generation. This library
+adds a Bubble Tea component that fits codes to the available space, handles
+resizing and graphics cleanup, and switches between Kitty images and Unicode
+blocks. It also provides a small encoding API with input and image-size limits,
+Unicode handling, and a quiet zone around every code.
+
+Use go-qr directly for general QR generation, image export, or decoding. Use
+`ntcharts-qrcode` when you want to display QR codes inside a Bubble Tea app.
+
+Built for [gloss](https://github.com/NimbleMarkets/gloss), it's a small,
+experimental companion to [NTCharts](https://github.com/NimbleMarkets/ntcharts).
+
+[Open the browser demo](https://nimblemarkets.github.io/ntcharts-qrcode/)
+
+```text
+┌─────────────────────────────────────────┐
+│                                         │
+│                                         │
+│    █▀▀▀▀▀█   ▄▀ █▄▄▀█▀▀▄ ▄▀▄ █▀▀▀▀▀█    │
+│    █ ███ █ █▄ ▄█▀▄ █▀▀▀▄▀█▄▄ █ ███ █    │
+│    █ ▀▀▀ █ █ ▀▀ ▀ █▄█▀ ▄█▄▀  █ ▀▀▀ █    │
+│    ▀▀▀▀▀▀▀ █ ▀ █ █▄▀ █ ▀▄█▄█ ▀▀▀▀▀▀▀    │
+│    █ ███▀▀▄ ▄█ ▄▀▀▀ ▀▄▄█▄▀▄▀ ██▀██▄▄    │
+│     █▄ █ ▀  ▀▀██ ▄▀  ▀ ▄█▀▄█▀  █▄█▀▄    │
+│    █  ▄█ ▀▄▄███▄▄▄█▄ ▀ ▄ ▀▄▀█▄ ▀█▄██    │
+│    ▀▀▄▀▀▄▀▀█▀▀▄ ▄▄ ▄▀ █▄██▄████▀▄█▀     │
+│    ▄█▀██▄▀▀ ▄█▀█▀▀ ▄█▄██▄▀▄▀▀▄█▀▄▄ █    │
+│     ▄▄█▀█▀ ▄▀ █▀▄▀███▄ ███  ▄▄██▄██▄    │
+│    ▄▀ ▀  ▀ ▀ ▄▄ ▀ █▀▄▄ ▀▄ █  ▄ ▀▀▄▀█    │
+│    █ ▀  █▀██▄▄ ▄███▀ ▀ ▀█▄ ▄▀█▄ █▄▀     │
+│    ▀     ▀▀▄▀▄ ███▀█▀ ▄▄ █ █▀▀▀█ ▄ ▄    │
+│    █▀▀▀▀▀█ ▄▄█▀█▄▄█  ▀▄▀▄███ ▀ █▄█▄▄    │
+│    █ ███ █ █▄▀█▄▀▄▄▄ ▀▀▄█ ▄██▀▀█▀ ██    │
+│    █ ▀▀▀ █ ▀▄▄ ▄ ▄ ▄ ▄█▄▄ ▄ ▄█▀▄▄█      │
+│    ▀▀▀▀▀▀▀ ▀ ▀▀  ▀  ▀ ▀  ▀▀▀▀ ▀   ▀     │
+│                                         │
+│                                         │
+└─────────────────────────────────────────┘
+```
 
 ## Quickstart
 
@@ -28,10 +59,9 @@ go get github.com/NimbleMarkets/ntcharts-qrcode/qrcode
 go run ./examples/qrcode
 ```
 
-The example shows two independently managed codes. `n` changes the first
-URL, `2` removes/restores the second, `g` switches graphics, and `q` quits.
-Resize the terminal to exercise fit errors and recovery. At narrow widths,
-hide the second code with `2` to give the first the full width.
+The example displays two QR codes. Press `n` to change the first URL, `2` to
+hide or restore the second code, `g` to switch rendering modes, and `q` to quit.
+If your terminal is too narrow for both codes, press `2` to make room.
 
 ```go
 import "github.com/NimbleMarkets/ntcharts-qrcode/qrcode"
@@ -45,17 +75,14 @@ img, err := code.Image(8) // opaque image.Image, exactly 8 pixels per module
 // Handle err, then png.Encode(writer, img) to export it.
 ```
 
-`Options{}` selects medium error correction. `Low`, `Medium`, `Quartile`,
-and `High` are supported; the level is a minimum, raised for free when the
-payload still fits the chosen symbol version. Payloads use optimized
-numeric/alphanumeric/byte/Kanji segments. Non-ASCII text carries an explicit
-UTF-8 ECI header; ambiguous Kanji characters stay in byte segments so the
-decoded text is preserved exactly. Equal-sized segmentation candidates use
-the strongest available correction. `Options.MinVersion` and `MaxVersion`
-bound the symbol version (1..40) — set both to the same value to pin an exact
-size so changing content never reflows a layout; content that outgrows the
-bound fails with `ErrCapacity`. Encoding is separate from presentation; the
-library does not open files, fetch URLs, or save images itself.
+`Options{}` uses medium error correction, with an automatic boost when a
+stronger level fits in the same size. You can also request `Low`, `Quartile`,
+or `High`.
+
+Set `MinVersion` and `MaxVersion` to limit the QR size (versions 1–40). Set
+them to the same value to keep the size fixed as content changes. Text that
+won't fit returns `ErrCapacity`. Unicode text is supported, including mixed
+Japanese and Latin text.
 
 ## Composing the terminal component
 
@@ -88,71 +115,62 @@ startup, and cleanup before quitting.
 - `errors.Is(qr.Err(), qrcode.ErrDoesNotFit)` identifies insufficient space.
   The component never truncates the matrix or removes the quiet zone.
 
-The component returns content as a string so the host can compose it into
-its own `tea.View`. It owns no keyboard bindings, title, border, or overlay.
+`View()` returns a string you can include in your own `tea.View`. Add your
+own keyboard bindings, borders, and labels around it.
 
-## Rendering and limits
+## Rendering
 
-Kitty and exported images have square modules, integer scaling, sharp edges,
-and an opaque white background. The glyph path renders directly from modules,
-with explicit foreground and background colors. It approximates square modules
-using whole columns and half-rows: the longer side is at most 9/8 of the shorter.
-An 8×16 cell is assumed until measured geometry arrives. Unusual font geometry
-can still need more terminal space.
+Images use black modules on an opaque white background, with a four-module
+quiet zone. They scale in whole pixels to keep the edges sharp. If a code
+won't fit in the terminal, the component reports `ErrDoesNotFit` rather than
+cutting it off.
 
-**Apple Terminal** (and any terminal that draws `▀` from the font rather than
-filling the exact half cell) misplaces half-block glyphs, which breaks finder
-and alignment patterns. Set `Config{SolidCells: true}` there: modules fill
-whole cells with solid color (2 columns × 1 row on 1:2 cells), so nothing
-depends on glyph geometry, at four times the half-block area (about 66×33
-cells for a short URL). The host owns the choice; the example enables it for
-`TERM_PROGRAM=Apple_Terminal` or `NTCHARTS_QRCODE_SOLID=1` (for example inside tmux).
+Glyph rendering uses colored half-blocks and adapts to the terminal's cell
+size. It starts with an 8×16-pixel estimate; pass measured dimensions through
+`SetTerminal` when you have them.
 
-Input must be nonempty UTF-8, bounded to 7,089 bytes before UTF-8 validation
-or encoding; actual capacity depends on content and correction level. Capacity errors wrap
-`ErrCapacity`. `Image(scale)` accepts 1..16 with at most 2,048 pixels per edge.
-Terminal rendering is bounded to 2,048-pixel edges, 256 Kitty cells per axis,
-and 65,536 glyph cells. The display chooses at most eight pixels per module.
+**Apple Terminal** draws half-blocks with gaps that can break a QR code.
+Use `Config{SolidCells: true}` to fill whole cells instead. This takes four
+times the area—about 66×33 cells for a short URL. The example enables it when
+`TERM_PROGRAM=Apple_Terminal`; you can also set `NTCHARTS_QRCODE_SOLID=1`,
+including inside tmux.
 
-NTCharts **v2.4.0** is the tested baseline. The Kitty implementation deliberately
-uses picture's exact-size `FitFill` path to avoid filtered resizing. Tests decode
-the actual transmitted PNG and verify every pixel; retain those checks when
-upgrading NTCharts. See [DEVELOP.md](./DEVELOP.md) for the dependency assessment.
+Input must be nonempty UTF-8 and no more than 7,089 bytes. How much fits in a
+code depends on the text and correction level. `Image(scale)` accepts integer
+scales from 1 to 16, up to 2,048 pixels per edge. Terminal output is limited to
+256 Kitty cells per axis or 65,536 glyph cells.
 
-Independent decoder tests cover images and reconstructed glyph output, Unicode,
-capacity, quiet zones, scaling, resize, fallback, multiple instances, and cleanup.
-Manual acceptance on 2026-10-06 (see [DEVELOP.md](./DEVELOP.md)) scanned the
-example with a phone in Apple Terminal (solid cells) and iTerm2 (half-blocks),
-and checked a Kitty-graphics terminal and tmux visually. Other terminals,
-fonts, and phones were not tested. Decoding tests do not establish camera scanability. A QR code also does
-not make a localhost URL reachable remotely.
+The example has been scanned with a phone in Apple Terminal (solid cells)
+and iTerm2 (half-blocks). Kitty graphics and tmux have also been checked
+visually. See [DEVELOP.md](./DEVELOP.md#manual-acceptance-checks) for the
+recorded results and remaining checks.
 
-Sixel, logos, styling, and decoding as a product feature are outside this scope.
-
-## Development and browser demo
+## Development
 
 ```sh
-task ci                 # tests, race detector, vet, builds, vulnerability scans
-task vuln               # native + WASM vulnerability scans (requires network)
-task build-ex-qrcode    # bin/ntcharts-qrcode
+task ci                 # full checks, builds, and vulnerability scans
+task test               # tests without a vulnerability-database query
+task build-ex-qrcode    # build bin/ntcharts-qrcode
 task serve-wasm-site    # http://localhost:8000/ntcharts-qrcode/
 task clean              # remove generated binaries and demo assets
 ```
 
-Like ntcharts-osm, `wasm.work` selects the Bubble Tea and clipboard WASM forks;
-native builds use upstream versions. The browser example uses go-booba. Its
-generated assets are ignored. CI runs the same `task ci` checks as local
-development, including a separate consumer module that catches dependency
-replacement regressions. Dependabot checks Go modules and Actions weekly.
-`task ci` also runs `task vuln`: a pinned `govulncheck` scans native code
-(including tests) and the WASM workspace against the current Go vulnerability
-database. Reachable vulnerabilities or scan failures fail CI; the scans
-require network access.
-The GitHub Pages workflow builds on pushes to `main` and can also be run
-manually. It runs the full `task ci` checks on the revision being deployed
-before uploading the site; failed checks prevent deployment. Enable Pages
-with GitHub Actions before deploying. No hosted demo is assumed to be
-deployed yet.
+The browser demo runs the same example through [go-booba](https://github.com/NimbleMarkets/go-booba).
+`wasm.work` selects the Bubble Tea and clipboard forks needed for WASM;
+native builds use upstream versions.
+
+Encoding uses [piglig/go-qr v2.3.0](https://github.com/piglig/go-qr/releases/tag/v2.3.0).
+Rendering uses NTCharts v2.4.0. Tests independently decode generated images,
+Kitty PNG data, and reconstructed glyph output. They also cover Unicode,
+capacity limits, resizing, and cleanup. Camera and terminal checks are recorded
+separately in [DEVELOP.md](./DEVELOP.md).
+
+Run `task ci` before submitting changes. It checks formatting, dependencies,
+race tests, vet, Windows/native/WASM builds, and known vulnerabilities. The
+vulnerability scans require network access. The Pages workflow runs these
+checks before deploying; configure GitHub Pages to use GitHub Actions to
+enable it. See [DEVELOP.md](./DEVELOP.md) for implementation notes and the
+dependency review.
 
 ## License
 
