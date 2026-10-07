@@ -100,6 +100,14 @@ using whole columns and half-rows: the longer side is at most 9/8 of the shorter
 An 8×16 cell is assumed until measured geometry arrives. Unusual font geometry
 can still need more terminal space.
 
+**Apple Terminal** (and any terminal that draws `▀` from the font rather than
+filling the exact half cell) misplaces half-block glyphs, which breaks finder
+and alignment patterns. Set `Config{SolidCells: true}` there: modules fill
+whole cells with solid color (2 columns × 1 row on 1:2 cells), so nothing
+depends on glyph geometry, at four times the half-block area (about 66×33
+cells for a short URL). The host owns the choice; the example enables it for
+`TERM_PROGRAM=Apple_Terminal` or `NTCHARTS_QRCODE_SOLID=1` (for example inside tmux).
+
 Input must be nonempty UTF-8, bounded to 7,089 bytes before UTF-8 validation
 or encoding; actual capacity depends on content and correction level. Capacity errors wrap
 `ErrCapacity`. `Image(scale)` accepts 1..16 with at most 2,048 pixels per edge.
@@ -113,9 +121,11 @@ upgrading NTCharts. See [DEVELOP.md](./DEVELOP.md) for the dependency assessment
 
 Independent decoder tests cover images and reconstructed glyph output, Unicode,
 capacity, quiet zones, scaling, resize, fallback, multiple instances, and cleanup.
-**Real phone-camera, terminal/font, and tmux checks remain manual and have not
-been completed for this extraction.** Decoding tests do not establish camera
-scanability. A QR code also does not make a localhost URL reachable remotely.
+Manual acceptance on 2026-10-06 (see [DEVELOP.md](./DEVELOP.md)) scanned the
+example with a phone in Apple Terminal (solid cells) and iTerm2 (half-blocks),
+and checked a Kitty-graphics terminal and tmux visually. Other terminals,
+fonts, and phones were not tested. Decoding tests do not establish camera scanability. A QR code also does
+not make a localhost URL reachable remotely.
 
 Sixel, logos, styling, and decoding as a product feature are outside this scope.
 

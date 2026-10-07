@@ -19,7 +19,16 @@ var ErrDoesNotFit = errors.New("QR code doesn't fit")
 // Config uses the host's image-ID allocator, shared with its other pictures.
 // NextID must return a fresh, positive 24-bit ID on every call, including
 // across components. Images are retired on replacement, resize, and Close.
-type Config struct{ NextID func() int }
+//
+// SolidCells makes the glyph fallback fill whole terminal cells with solid
+// background color (about 2 columns × 1 row per module on 1:2 cells, four times
+// the half-block area) instead of half-block glyphs. Hosts choose it for
+// terminals such as Apple Terminal that draw U+2580 from the font, misplacing
+// it within the cell. It does not affect Kitty rendering.
+type Config struct {
+	NextID     func() int
+	SolidCells bool
+}
 
 // Model is a composable picture-style Bubble Tea component: setters and
 // Update return commands for the host to run; View returns only its content.
@@ -33,7 +42,7 @@ type Model struct {
 	flight       *placement
 	id           int
 	w, h, cw, ch int
-	kitty        bool
+	kitty, solid bool
 	glyph        string
 	grid         string
 	err          error
@@ -44,7 +53,7 @@ func New(code *Code, cfg Config) (*Model, error) {
 	if code == nil || len(code.modules) == 0 || cfg.NextID == nil {
 		return nil, errors.New("QR component requires a code and the host's image-ID allocator")
 	}
-	return &Model{code: code, nextID: cfg.NextID, cw: 8, ch: 16, err: ErrDoesNotFit}, nil
+	return &Model{code: code, nextID: cfg.NextID, solid: cfg.SolidCells, cw: 8, ch: 16, err: ErrDoesNotFit}, nil
 }
 
 // SetCode replaces content. Nil clears it. Encode errors can be handled before
@@ -175,12 +184,15 @@ func (m *Model) layout() tea.Cmd {
 	n := len(m.code.modules)
 	if !m.kitty {
 		x, y := glyphScale(m.cw, m.ch)
+		if m.solid {
+			x, y = solidScale(m.cw, m.ch)
+		}
 		cols, rows := n*x, (n*y+1)/2
 		if cols > m.w || rows > m.h || cols*rows > 65536 {
 			m.err = fmt.Errorf("%w: needs %d columns × %d rows in glyph mode", ErrDoesNotFit, cols, rows)
 			return cleanup
 		}
-		m.glyph = halfBlocks(m.code.modules, x, y)
+		m.glyph = halfBlocks(m.code.modules, x, y, m.solid)
 		return cleanup
 	}
 	// Bound allocation, cell multiplication, and Kitty's diacritic grid.
@@ -256,9 +268,26 @@ func glyphScale(cw, ch int) (int, int) {
 	return ch / g, 2 * cw / g
 }
 
+// Find the smallest whole-cell module (columns, half-rows) that is nearly
+// square, using the same 9/8 tolerance. Half-rows are always even, so each cell
+// is a single solid color.
+func solidScale(cw, ch int) (int, int) {
+	g := gcd(cw, ch)
+	for x := 1; x < ch/g; x++ {
+		r := max(1, (2*cw*x+ch)/(2*ch))
+		w, h := cw*x, ch*r
+		if 8*max(w, h) <= 9*min(w, h) {
+			return x, 2 * r
+		}
+	}
+	return ch / g, 2 * cw / g
+}
+
 // halfBlocks maps modules directly to explicit black/white foreground AND
 // background. The unused bottom half-row is white, never terminal-default.
-func halfBlocks(matrix [][]bool, sx, sy int) string {
+// With solid, sy is even so foreground equals background in every cell and a
+// space replaces the glyph, leaving nothing for a font to misplace.
+func halfBlocks(matrix [][]bool, sx, sy int, solid bool) string {
 	n := len(matrix)
 	var out strings.Builder
 	for y := 0; y < n*sy; y += 2 {
@@ -281,7 +310,11 @@ func halfBlocks(matrix [][]bool, sx, sy int) string {
 				fmt.Fprintf(&out, "\x1b[38;2;%d;%d;%d;48;2;%d;%d;%dm", fg, fg, fg, bg, bg, bg)
 				last = key
 			}
-			out.WriteRune('▀')
+			if solid {
+				out.WriteByte(' ')
+			} else {
+				out.WriteRune('▀')
+			}
 		}
 		out.WriteString("\x1b[0m")
 	}

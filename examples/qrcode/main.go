@@ -20,15 +20,22 @@ var addresses = []string{
 	"https://example.org/東京?q=☕",
 }
 
+// solidCells reports whether the host should avoid half-block glyphs. Apple
+// Terminal draws U+2580 from the font, misplacing it within the cell. The host
+// owns this choice: tmux hides TERM_PROGRAM, so NTCHARTS_QRCODE_SOLID=1 forces it.
+func solidCells() bool {
+	return os.Getenv("TERM_PROGRAM") == "Apple_Terminal" || os.Getenv("NTCHARTS_QRCODE_SOLID") == "1"
+}
+
 type model struct {
 	terminal                    picture.Model
 	codes                       [2]*qrcode.Model
 	width, height, id, selected int
-	preferKitty                 bool
+	preferKitty, solid          bool
 }
 
 func newModel() *model {
-	m := &model{terminal: picture.NewWithConfig(picture.Config{KittyID: 1}), preferKitty: true}
+	m := &model{terminal: picture.NewWithConfig(picture.Config{KittyID: 1}), preferKitty: true, solid: solidCells()}
 	m.codes[0], m.codes[1] = m.newQR(addresses[0]), m.newQR(addresses[1])
 	return m
 }
@@ -43,7 +50,7 @@ func (m *model) newQR(text string) *qrcode.Model {
 	if err != nil {
 		panic(err)
 	} // fixed example payloads
-	qr, err := qrcode.New(code, qrcode.Config{NextID: m.nextID})
+	qr, err := qrcode.New(code, qrcode.Config{NextID: m.nextID, SolidCells: m.solid})
 	if err != nil {
 		panic(err)
 	}
@@ -131,6 +138,9 @@ func (m *model) View() tea.View {
 		body = lipgloss.JoinHorizontal(lipgloss.Top, panes[0], " ", panes[1])
 	}
 	mode := "glyph"
+	if m.solid {
+		mode = "solid cells"
+	}
 	if m.preferKitty && picture.KittySupported() == picture.KittyCapabilitySupported {
 		mode = "Kitty"
 	}

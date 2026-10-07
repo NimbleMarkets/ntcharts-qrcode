@@ -43,6 +43,14 @@ glyph modules are approximately square, with sharp edges and no resampling.
 The initial 8×16 cell estimate assumes a 1:2 font. Unusual measured ratios
 can still require more space. Kitty and PNG modules remain exactly square.
 
+Apple Terminal draws U+2580 from the font: measured in a 30px cell, the upper
+half block landed 5px low and 13px tall, so finder and alignment patterns
+broke while background fills stayed exact. `Config.SolidCells` therefore fills
+whole cells with identical foreground/background and writes spaces, using the
+same 9/8 tolerance (2×1 on 1:2 cells) and four times the half-block area. The
+host chooses it; the library does not detect terminals. Tests require equal
+colors in every cell and no `▀`, and decode the physical result.
+
 For Kitty, the component builds an opaque bitmap with square, integer-sized
 modules (up to eight pixels each), padded white to exactly fill its cell
 rectangle. NTCharts v2.4.0 normally uses Catmull–Rom resizing; its `FitFill`
@@ -133,5 +141,19 @@ Run the example in a Kitty-capable terminal and a glyph-only terminal, then
 through tmux with its normal graphics setup. Resize and change fonts, switch
 render modes, change content, remove/restore the second code, and quit. Check
 for stale images and scan both codes with a phone. Record terminal, font, cell
-geometry, transport, and exact decoded URL. These checks have not yet been
-completed for the extraction; automated decoders are not a substitute.
+geometry, transport, and exact decoded URL. Automated decoders are not a
+substitute.
+
+Results, 2026-10-06 (Evan Wies; detail recorded only as reported):
+
+- Apple Terminal, glyph fallback: half-block `▀` is drawn from the font and
+  misplaced (about 5px low, 13px tall in a 30px cell; other block glyphs also
+  appeared inset from the cell edges), breaking finder and alignment patterns. With
+  `Config.SolidCells` the codes render correctly at 70×40 or larger and scan
+  with a phone.
+- iTerm2, glyph fallback with half-blocks: renders correctly and scans.
+- A Kitty-graphics terminal and tmux with its normal graphics setup: checked
+  and reported fine. Phone scans of these were not reported.
+- Not recorded: the Kitty terminal's identity, fonts, exact cell geometry, and
+  the decoded URLs. WezTerm and other glyph terminals were not tried. Add
+  those details here if they are re-run.

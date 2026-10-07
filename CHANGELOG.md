@@ -11,5 +11,7 @@ extracted from [gloss](https://github.com/NimbleMarkets/gloss).
 * Immutable module matrices and PNG-ready images with a four-module quiet zone.
 * Composable Kitty and Unicode half-block rendering with fit checks,
   host-owned image IDs, and asynchronous cleanup.
+* `Config.SolidCells` renders whole-cell modules for terminals, such as Apple
+  Terminal, that misplace font-drawn half-block glyphs.
 * Independent decoding tests, a two-code terminal example, and a WASM demo.
 * Task-based CI and vulnerability scans, with Pages deployment gated on checks.

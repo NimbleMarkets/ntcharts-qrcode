@@ -82,7 +82,7 @@ func glyphImage(t *testing.T, output string, geometry ...int) image.Image {
 		cw, halfHeight = geometry[0], geometry[1]
 	}
 	out := image.NewGray(image.Rect(0, 0, w*cw, h*halfHeight))
-	tokens := regexp.MustCompile("\x1b\\[[0-9;]+m|▀").FindAllString
+	tokens := regexp.MustCompile("\x1b\\[[0-9;]+m|▀| ").FindAllString
 	for y, line := range lines {
 		x, fg, bg := 0, -1, -1
 		for _, token := range tokens(line, -1) {
@@ -90,7 +90,7 @@ func glyphImage(t *testing.T, output string, geometry ...int) image.Image {
 				fg, bg = -1, -1
 				continue
 			}
-			if token != "▀" {
+			if token != "▀" && token != " " {
 				var r, g, b, br, bgc, bb int
 				if n, err := fmt.Sscanf(token, "\x1b[38;2;%d;%d;%d;48;2;%d;%d;%dm", &r, &g, &b, &br, &bgc, &bb); err != nil || n != 6 || r != g || g != b || br != bgc || bgc != bb {
 					t.Fatalf("unexpected colors: %q", token)
@@ -169,6 +169,64 @@ func TestGlyphRoundTripFitAndUpdates(t *testing.T) {
 	m.SetCode(nil)
 	if m.View() != "" {
 		t.Fatal("clear retained content")
+	}
+}
+
+// Apple Terminal draws U+2580 from the font, so it lands about 5px low and
+// short in a 30px cell. Whole-cell modules must not depend on glyph geometry:
+// every cell has identical foreground and background and no half-block glyph.
+func TestSolidCellsDoNotDependOnGlyphGeometry(t *testing.T) {
+	payload := "https://example.org/東京?q=☕"
+	colors := regexp.MustCompile(`38;2;(\d+);\d+;\d+;48;2;(\d+);`)
+	for _, tc := range []struct{ cw, ch, cols, rows int }{{8, 16, 2, 1}, {8, 24, 3, 1}, {10, 20, 2, 1}, {8, 17, 2, 1}} {
+		t.Run(fmt.Sprint(tc.cw, "x", tc.ch), func(t *testing.T) {
+			m, err := New(encoded(t, payload, Medium), Config{NextID: ids(), SolidCells: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { m.Close() })
+			n := len(m.code.modules)
+			m.SetTerminal(false, tc.cw, tc.ch)
+			m.SetSize(n*tc.cols-1, n*tc.rows)
+			if !errors.Is(m.Err(), ErrDoesNotFit) || strings.Contains(m.View(), "\x1b[") {
+				t.Fatal("cropped QR rather than reporting insufficient space")
+			}
+			m.SetSize(n*tc.cols, n*tc.rows-1)
+			if !errors.Is(m.Err(), ErrDoesNotFit) || strings.Contains(m.View(), "\x1b[") {
+				t.Fatal("cropped QR rather than reporting insufficient space")
+			}
+			m.SetSize(n*tc.cols, n*tc.rows)
+			if m.Err() != nil {
+				t.Fatalf("whole-cell layout needs %d x %d: %v", n*tc.cols, n*tc.rows, m.Err())
+			}
+			view := m.View()
+			if strings.Contains(view, "▀") {
+				t.Fatal("solid cells must not draw font glyphs")
+			}
+			if lines := strings.Split(view, "\n"); len(lines) != n*tc.rows || ansi.StringWidth(lines[0]) != n*tc.cols {
+				t.Fatalf("got %d rows x %d cols", len(lines), ansi.StringWidth(lines[0]))
+			}
+			found := colors.FindAllStringSubmatch(view, -1)
+			if len(found) == 0 {
+				t.Fatal("no explicit colors")
+			}
+			for _, c := range found {
+				if c[1] != c[2] {
+					t.Fatalf("cell has different foreground and background: %q", c[0])
+				}
+			}
+			// Each cell is one whole terminal cell of pixels, so decode the actual
+			// physical aspect rather than the source matrix (doubled for odd heights).
+			img := glyphImage(t, view, 2*tc.cw, tc.ch)
+			bitmap, err := gozxing.NewBinaryBitmapFromImage(img)
+			if err != nil {
+				t.Fatal(err)
+			}
+			result, err := decoder.NewQRCodeReader().Decode(bitmap, nil)
+			if err != nil || result.GetText() != payload {
+				t.Fatalf("physical whole-cell roundtrip: %v", err)
+			}
+		})
 	}
 }
 
