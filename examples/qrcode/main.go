@@ -9,14 +9,14 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	booba "github.com/NimbleMarkets/go-booba"
-	"github.com/NimbleMarkets/ntcharts-qrcode/qrcode"
 	"github.com/NimbleMarkets/ntcharts/v2/picture"
+	"github.com/NimbleTerminal/ntqrcode/qrcode"
 	"github.com/charmbracelet/x/ansi"
 )
 
 var addresses = []string{
 	"https://nimble.markets/",
-	"https://github.com/NimbleMarkets/ntcharts-qrcode",
+	"https://github.com/NimbleTerminal/ntqrcode",
 	"https://example.org/東京?q=☕",
 }
 
@@ -144,7 +144,7 @@ func (m *model) View() tea.View {
 	if m.preferKitty && picture.KittySupported() == picture.KittyCapabilitySupported {
 		mode = "Kitty"
 	}
-	heading := ansi.Truncate("ntcharts-qrcode · "+mode, m.width, "…")
+	heading := ansi.Truncate("ntqrcode · "+mode, m.width, "…")
 	hint := ansi.Truncate("n change URL · 2 show/hide second · g graphics · q quit", m.width, "…")
 	v := tea.NewView(strings.Join([]string{heading, body, hint}, "\n"))
 	v.AltScreen = true

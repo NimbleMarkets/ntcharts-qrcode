@@ -1,13 +1,13 @@
-# ntcharts-qrcode — Terminal QR codes for Bubble Tea
+# ntqrcode — Terminal QR codes for Bubble Tea
 
 <p>
-    <a href="https://pkg.go.dev/github.com/NimbleMarkets/ntcharts-qrcode/qrcode"><img src="https://pkg.go.dev/badge/github.com/NimbleMarkets/ntcharts-qrcode/qrcode.svg" alt="Go Reference"></a>
-    <a href="https://github.com/NimbleMarkets/ntcharts-qrcode/actions/workflows/ci.yml"><img src="https://github.com/NimbleMarkets/ntcharts-qrcode/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://pkg.go.dev/github.com/NimbleTerminal/ntqrcode/qrcode"><img src="https://pkg.go.dev/badge/github.com/NimbleTerminal/ntqrcode/qrcode.svg" alt="Go Reference"></a>
+    <a href="https://github.com/NimbleTerminal/ntqrcode/actions/workflows/ci.yml"><img src="https://github.com/NimbleTerminal/ntqrcode/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="./CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code Of Conduct"></a>
 </p>
 
 Show QR codes in your [Bubble Tea](https://github.com/charmbracelet/bubbletea)
-app, or generate them as images. `ntcharts-qrcode` uses Kitty graphics where
+app, or generate them as images. `ntqrcode` uses Kitty graphics where
 available and Unicode blocks everywhere else.
 
 [go-qr](https://github.com/piglig/go-qr) does the QR generation. This library
@@ -17,12 +17,12 @@ blocks. It also provides a small encoding API with input and image-size limits,
 Unicode handling, and a quiet zone around every code.
 
 Use go-qr directly for general QR generation, image export, or decoding. Use
-`ntcharts-qrcode` when you want to display QR codes inside a Bubble Tea app.
+`ntqrcode` when you want to display QR codes inside a Bubble Tea app.
 
 Built for [gloss](https://github.com/NimbleMarkets/gloss), it's a small,
 experimental companion to [NTCharts](https://github.com/NimbleMarkets/ntcharts).
 
-[Open the browser demo](https://nimblemarkets.github.io/ntcharts-qrcode/)
+[Open the browser demo](https://nimbleterminal.github.io/ntqrcode/)
 
 ```text
 ┌─────────────────────────────────────────┐
@@ -55,7 +55,7 @@ experimental companion to [NTCharts](https://github.com/NimbleMarkets/ntcharts).
 Requires Go 1.26.8+ and Bubble Tea v2. The API is experimental.
 
 ```sh
-go get github.com/NimbleMarkets/ntcharts-qrcode/qrcode
+go get github.com/NimbleTerminal/ntqrcode/qrcode
 go run ./examples/qrcode
 ```
 
@@ -64,7 +64,7 @@ hide or restore the second code, `g` to switch rendering modes, and `q` to quit.
 If your terminal is too narrow for both codes, press `2` to make room.
 
 ```go
-import "github.com/NimbleMarkets/ntcharts-qrcode/qrcode"
+import "github.com/NimbleTerminal/ntqrcode/qrcode"
 
 code, err := qrcode.Encode("https://nimble.markets/", qrcode.Options{})
 if err != nil {
@@ -150,8 +150,8 @@ recorded results and remaining checks.
 ```sh
 task ci                 # full checks, builds, and vulnerability scans
 task test               # tests without a vulnerability-database query
-task build-ex-qrcode    # build bin/ntcharts-qrcode
-task serve-wasm-site    # http://localhost:8000/ntcharts-qrcode/
+task build-ex-qrcode    # build bin/ntqrcode
+task serve-wasm-site    # http://localhost:8000/ntqrcode/
 task clean              # remove generated binaries and demo assets
 ```
 

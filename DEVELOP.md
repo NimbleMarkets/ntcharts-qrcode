@@ -1,4 +1,4 @@
-# Developing ntcharts-qrcode
+# Developing ntqrcode
 
 Run `task ci` before submitting changes. The module follows the sibling
 NTCharts projects: public component in `qrcode/`, a runnable example in
@@ -130,7 +130,7 @@ check; `task test` remains available without the vulnerability-database query.
 
 Like the SVG/PDF companions, weekly Dependabot checks cover Actions and Go
 modules. Task targets include `go-update`, `clean`, and `clean-wasm-site`;
-`serve-wasm-site` serves `/ntcharts-qrcode/` to match the GitHub Pages prefix.
+`serve-wasm-site` serves `/ntqrcode/` to match the GitHub Pages prefix.
 Pages builds on `main` pushes or manual dispatch, with deployment permissions
 limited to the deploy job. Its build job runs the full `task ci` checks on
 the selected revision before uploading the site, so automatic and manual

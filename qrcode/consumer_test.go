@@ -20,14 +20,14 @@ func TestDownstreamConsumer(t *testing.T) {
 	dir := t.TempDir()
 	files := map[string]string{
 		"go.mod": "module consumer.example/qrcode\n\ngo 1.26.8\n\n" +
-			"require github.com/NimbleMarkets/ntcharts-qrcode v0.0.0\n\n" +
-			"replace github.com/NimbleMarkets/ntcharts-qrcode => " + strconv.Quote(filepath.Dir(cwd)) + "\n",
+			"require github.com/NimbleTerminal/ntqrcode v0.0.0\n\n" +
+			"replace github.com/NimbleTerminal/ntqrcode => " + strconv.Quote(filepath.Dir(cwd)) + "\n",
 		"main.go": `package main
 import (
     "errors"
     "strings"
     "time"
-    "github.com/NimbleMarkets/ntcharts-qrcode/qrcode"
+    "github.com/NimbleTerminal/ntqrcode/qrcode"
 )
 func main() {
     time.AfterFunc(10*time.Second, func() { panic("encoding did not terminate") })

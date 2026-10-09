@@ -1,4 +1,4 @@
-# ntcharts-qrcode - Copyright (c) 2026 Neomantra Corp.
+# ntqrcode - Copyright (c) 2026 Neomantra Corp.
 
 version: '3'
 
@@ -53,7 +53,7 @@ tasks:
     deps:
       - clean-wasm-site
     cmds:
-      - rm -f bin/ntcharts-qrcode
+      - rm -f bin/ntqrcode
       - rm -rf .task
 
 ###############################################################################
@@ -67,14 +67,14 @@ tasks:
   build-ex-qrcode:
     desc: 'Build the two-code terminal example'
     cmds:
-      - go build -mod=readonly -o bin/ntcharts-qrcode ./examples/qrcode
+      - go build -mod=readonly -o bin/ntqrcode ./examples/qrcode
     sources:
       - qrcode/**/*.go
       - examples/qrcode/*.go
       - go.mod
       - go.sum
     generates:
-      - bin/ntcharts-qrcode
+      - bin/ntqrcode
 
 ###############################################################################
 # Demo website via booba
@@ -89,14 +89,14 @@ tasks:
       - web/app.wasm
 
   serve-wasm-site:
-    desc: 'Serve web/ at http://localhost:8000/ntcharts-qrcode/ (matches GH Pages prefix)'
+    desc: 'Serve web/ at http://localhost:8000/ntqrcode/ (matches GH Pages prefix)'
     deps:
       - build-wasm-site
     vars:
-      SERVE_DIR: /tmp/ntcharts-qrcode-site
+      SERVE_DIR: /tmp/ntqrcode-site
     cmds:
       - mkdir -p "{{.SERVE_DIR}}"
-      - ln -sfn "$PWD/web" "{{.SERVE_DIR}}/ntcharts-qrcode"
+      - ln -sfn "$PWD/web" "{{.SERVE_DIR}}/ntqrcode"
       - python3 -m http.server 8000 --directory "{{.SERVE_DIR}}"
 
   clean-wasm-site:

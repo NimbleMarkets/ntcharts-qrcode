@@ -1,4 +1,4 @@
-module github.com/NimbleMarkets/ntcharts-qrcode
+module github.com/NimbleTerminal/ntqrcode
 
 go 1.26.8
 

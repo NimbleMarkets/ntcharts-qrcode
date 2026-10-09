@@ -1,4 +1,9 @@
-# `ntcharts-qrcode` CHANGELOG
+# `ntqrcode` CHANGELOG
+
+## Unreleased
+
+* Rename the project and module to `github.com/NimbleTerminal/ntqrcode`.
+  Update imports to `github.com/NimbleTerminal/ntqrcode/qrcode`.
 
 ## v0.1.1 (2026-10-07)
 
@@ -8,7 +13,7 @@
 
 ## v0.1.0 (2026-10-06)
 
-Initial release. `ntcharts-qrcode` encodes QR codes and presents them inside
+Initial release. `ntqrcode` encodes QR codes and presents them inside
 an existing Bubble Tea v2 event loop — with Kitty graphics or explicit
 black/white Unicode half-blocks — as an experimental NTCharts companion
 extracted from [gloss](https://github.com/NimbleMarkets/gloss).
