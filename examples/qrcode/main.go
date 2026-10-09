@@ -10,8 +10,8 @@ import (
 	"charm.land/lipgloss/v2"
 	booba "github.com/NimbleMarkets/go-booba"
 	"github.com/NimbleMarkets/ntcharts/v2/picture"
-	"github.com/NimbleTerminal/ntqrcode/qrcode"
 	"github.com/charmbracelet/x/ansi"
+	"nimbleterminal.dev/ntqrcode/qrcode"
 )
 
 var addresses = []string{

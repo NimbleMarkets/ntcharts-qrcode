@@ -1,9 +1,18 @@
 # `ntqrcode` CHANGELOG
 
-## Unreleased
+## v0.2.0 (2026-10-09)
 
-* Rename the project and module to `github.com/NimbleTerminal/ntqrcode`.
-  Update imports to `github.com/NimbleTerminal/ntqrcode/qrcode`.
+* **Breaking:** move the module from `github.com/NimbleMarkets/ntcharts-qrcode`
+  to `nimbleterminal.dev/ntqrcode`, hosted at
+  [NimbleTerminal/ntqrcode](https://github.com/NimbleTerminal/ntqrcode).
+  Replace imports with `nimbleterminal.dev/ntqrcode/qrcode`; the public API
+  is unchanged.
+* Rename the example binary to `bin/ntqrcode` and the browser demo prefix
+  to `/ntqrcode/`.
+* Update Go dependencies, including Bubble Tea `v2.1.0`, NTCharts `v2.7.2`,
+  and `piglig/go-qr` `v2.6.0`; refresh demo dependency notices.
+* Run hosted CI and Pages checks with Go `1.27.2`, including native and WASM
+  vulnerability scans. The minimum supported Go version remains `1.26.8`.
 
 ## v0.1.1 (2026-10-07)
 

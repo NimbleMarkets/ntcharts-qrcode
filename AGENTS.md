@@ -1,7 +1,7 @@
 # ntqrcode
 
 An experimental NTCharts companion for QR codes in Bubble Tea v2, extracted
-from gloss. Module: `github.com/NimbleTerminal/ntqrcode`, Go 1.26.8+.
+from gloss. Module: `nimbleterminal.dev/ntqrcode`, Go 1.26.8+.
 
 ## Layout
 

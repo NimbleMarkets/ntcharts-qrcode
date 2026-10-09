@@ -37,7 +37,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## charm.land/bubbletea/v2 v2.0.10
+## charm.land/bubbletea/v2 v2.1.0
 
 ```
 MIT License
@@ -123,7 +123,7 @@ The following files are under their respective licenses:
   * ./etc/booba.png remains **All Rights Reserved** by Neomantra Corp.  You may use it only in unmodified form and only as part of this project (e.g., in forks or distributions of the project).  You may **not** extract it for unrelated use, modify it, or redistribute it separately without explicit permission.
 ```
 
-## github.com/NimbleMarkets/ntcharts/v2 v2.4.0
+## github.com/NimbleMarkets/ntcharts/v2 v2.7.2
 
 ```
 MIT License
@@ -148,13 +148,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-----
 
-The following files are under their respective licenses:
+# Notices
 
-  * ./web/_assets/NimbyFlame.svg remains **All Rights Reserved** by Neomantra Corp.  You may use it only in unmodified form and only as part of this project (e.g., in forks or distributions of the project).  You may **not** extract it for unrelated use, modify it, or redistribute it separately without explicit permission.
+The source code of this project is released under the MIT License, see [LICENSE](./LICENSE),
+**except** for the following files, which are under their respective licenses:
 
-  * ./examples/picture/Fuji-01.png is from https://www.hypertalking.com/2023/05/08/1-bit-pixel-art-of-hokusais-the-great-wave-off-kanagawa/ and distributed under "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License", http://creativecommons.org/licenses/by-nc-nd/4.0/.
+  * [`./web/_assets/NimbyFlame.svg`](./web/_assets/NimbyFlame.svg) remains **All Rights Reserved** by Neomantra Corp.  You may use it only in unmodified form and only as part of this project (e.g., in forks or distributions of the project).  You may **not** extract it for unrelated use, modify it, or redistribute it separately without explicit permission.
+
+  * [`./examples/picture/Fuji-01.png`](./examples/picture/Fuji-01.png) is from https://www.hypertalking.com/2023/05/08/1-bit-pixel-art-of-hokusais-the-great-wave-off-kanagawa/ and distributed under the "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License", http://creativecommons.org/licenses/by-nc-nd/4.0/.
 ```
 
 ## github.com/NimbleMarkets/pixterm v0.0.0-20260501211346-dc18ac6c1a0f
@@ -561,7 +563,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## github.com/charmbracelet/ultraviolet v0.0.0-20260928045949-bbf040aedf25
+## github.com/charmbracelet/ultraviolet v0.0.0-20261008173134-6b8d4baf91b4
 
 ```
 MIT License
@@ -587,7 +589,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## github.com/charmbracelet/x/ansi v0.11.8
+## github.com/charmbracelet/x/ansi v0.11.9
 
 ```
 MIT License
@@ -781,7 +783,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-## github.com/mattn/go-runewidth v0.0.30
+## github.com/mattn/go-runewidth v0.0.31
 
 ```
 The MIT License (MIT)
@@ -833,7 +835,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## github.com/piglig/go-qr/v2 v2.3.0
+## github.com/piglig/go-qr/v2 v2.6.0
 
 ```
 MIT License
@@ -911,7 +913,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## golang.org/x/image v0.46.0
+## golang.org/x/image v0.47.0
 
 ```
 Copyright 2009 The Go Authors.
@@ -943,7 +945,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## golang.org/x/sync v0.23.0
+## golang.org/x/sync v0.24.0
 
 ```
 Copyright 2009 The Go Authors.
@@ -975,7 +977,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## golang.org/x/sys v0.48.0
+## golang.org/x/sys v0.49.0
 
 ```
 Copyright 2009 The Go Authors.

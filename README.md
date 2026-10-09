@@ -1,7 +1,7 @@
 # ntqrcode — Terminal QR codes for Bubble Tea
 
 <p>
-    <a href="https://pkg.go.dev/github.com/NimbleTerminal/ntqrcode/qrcode"><img src="https://pkg.go.dev/badge/github.com/NimbleTerminal/ntqrcode/qrcode.svg" alt="Go Reference"></a>
+    <a href="https://pkg.go.dev/nimbleterminal.dev/ntqrcode/qrcode"><img src="https://pkg.go.dev/badge/nimbleterminal.dev/ntqrcode/qrcode.svg" alt="Go Reference"></a>
     <a href="https://github.com/NimbleTerminal/ntqrcode/actions/workflows/ci.yml"><img src="https://github.com/NimbleTerminal/ntqrcode/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="./CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code Of Conduct"></a>
 </p>
@@ -54,8 +54,12 @@ experimental companion to [NTCharts](https://github.com/NimbleMarkets/ntcharts).
 
 Requires Go 1.26.8+ and Bubble Tea v2. The API is experimental.
 
+As of v0.2.0, the module is `nimbleterminal.dev/ntqrcode`. When upgrading
+from v0.1.x, replace `github.com/NimbleMarkets/ntcharts-qrcode/qrcode` imports
+with `nimbleterminal.dev/ntqrcode/qrcode`; the public API is unchanged.
+
 ```sh
-go get github.com/NimbleTerminal/ntqrcode/qrcode
+go get nimbleterminal.dev/ntqrcode/qrcode
 go run ./examples/qrcode
 ```
 
@@ -64,7 +68,7 @@ hide or restore the second code, `g` to switch rendering modes, and `q` to quit.
 If your terminal is too narrow for both codes, press `2` to make room.
 
 ```go
-import "github.com/NimbleTerminal/ntqrcode/qrcode"
+import "nimbleterminal.dev/ntqrcode/qrcode"
 
 code, err := qrcode.Encode("https://nimble.markets/", qrcode.Options{})
 if err != nil {
@@ -159,8 +163,8 @@ The browser demo runs the same example through [go-booba](https://github.com/Nim
 `wasm.work` selects the Bubble Tea and clipboard forks needed for WASM;
 native builds use upstream versions.
 
-Encoding uses [piglig/go-qr v2.3.0](https://github.com/piglig/go-qr/releases/tag/v2.3.0).
-Rendering uses NTCharts v2.4.0. Tests independently decode generated images,
+Encoding uses [piglig/go-qr v2.6.0](https://github.com/piglig/go-qr/releases/tag/v2.6.0).
+Rendering uses NTCharts v2.7.2. Tests independently decode generated images,
 Kitty PNG data, and reconstructed glyph output. They also cover Unicode,
 capacity limits, resizing, and cleanup. Camera and terminal checks are recorded
 separately in [DEVELOP.md](./DEVELOP.md).

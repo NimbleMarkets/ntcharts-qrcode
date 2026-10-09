@@ -53,7 +53,7 @@ colors in every cell and no `▀`, and decode the physical result.
 
 For Kitty, the component builds an opaque bitmap with square, integer-sized
 modules (up to eight pixels each), padded white to exactly fill its cell
-rectangle. NTCharts v2.4.0 normally uses Catmull–Rom resizing; its `FitFill`
+rectangle. NTCharts v2.7.2 normally uses Catmull–Rom resizing; its `FitFill`
 fast path bypasses this only with exact source/target sizes and transparent
 configured background. The QR source itself remains opaque. Resolution stays
 1.0. Tests inspect and independently decode the transmitted PNG, guarding this
@@ -65,7 +65,7 @@ bounded to 2,048-pixel edges, 256 Kitty cells per axis, or 65,536 glyph cells.
 
 Encoder review (October 2026):
 
-- [piglig/go-qr](https://github.com/piglig/go-qr) v2.3.0 is the encoder:
+- [piglig/go-qr](https://github.com/piglig/go-qr) v2.6.0 is the encoder:
   MIT-licensed pure Go with no external runtime dependencies, implementing QR
   Model 2 versions 1–40, four correction levels, optimized mixed-mode
   segmentation, mask selection, and Reed–Solomon correction. It is a young,
@@ -74,7 +74,7 @@ Encoder review (October 2026):
   skip2/go-qrcode (decode round-trips plus symbol sizes, 176 cases) matched.
   We use only its segment/matrix API and own the quiet zone, bounded image,
   and terminal presentation layers.
-- The encoder is pinned to the upstream v2.3.0 release, which includes the
+- The encoder is pinned to the upstream v2.6.0 release, which includes the
   version-search fix from [PR #100](https://github.com/piglig/go-qr/pull/100).
   No encoder fork or `replace` directive is needed. V2 makes its optimizer
   private, so `qrcode/segments_optimal.go` adapts its MIT-licensed dynamic
@@ -114,7 +114,8 @@ Encoder review (October 2026):
 
 GitHub Actions uses `actions/checkout@v7`, `actions/setup-go@v7`, and
 `go-task/setup-task@v2`, following the main NTCharts repo. CI invokes `task ci`
-so local and hosted checks stay in sync. `TestDownstreamConsumer` creates a
+so local and hosted checks stay in sync. Hosted checks use Go 1.27.2; run
+`GOTOOLCHAIN=go1.27.2 task ci` to match them locally. `TestDownstreamConsumer` creates a
 separate main module with `GOWORK=off` and only a local replacement for this
 library; it verifies dense encoding and capacity rejection without inheriting
 any of the library's dependency replacements.
@@ -136,6 +137,24 @@ limited to the deploy job. Its build job runs the full `task ci` checks on
 the selected revision before uploading the site, so automatic and manual
 deployments require passing checks. Repository Pages settings must use
 GitHub Actions.
+
+## Releasing
+
+The v0.2.0 module path is `nimbleterminal.dev/ntqrcode`; source and tags live
+at `https://github.com/NimbleTerminal/ntqrcode`. Before publishing, ensure
+`https://nimbleterminal.dev/ntqrcode?go-get=1` (and package subpaths) serves
+HTML containing this metadata instead of redirecting to a marketing site:
+
+```html
+<meta name="go-import" content="nimbleterminal.dev/ntqrcode git https://github.com/NimbleTerminal/ntqrcode">
+```
+
+Update the dated changelog and dependency notices, run
+`GOTOOLCHAIN=go1.27.2 task ci`, and commit the release changes. Publish the
+version tag and GitHub release only after module discovery works. Then verify
+`go get nimbleterminal.dev/ntqrcode/qrcode@v0.2.0` from a fresh module without
+local replacements. The downstream consumer test uses a local replacement,
+so it does not verify the public vanity endpoint or published tag.
 
 ## Manual acceptance checks
 
