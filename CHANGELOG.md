@@ -11,8 +11,10 @@
   to `/ntqrcode/`.
 * Update Go dependencies, including Bubble Tea `v2.1.0`, NTCharts `v2.7.2`,
   and `piglig/go-qr` `v2.6.0`; refresh demo dependency notices.
-* Run hosted CI and Pages checks with Go `1.27.2`, including native and WASM
-  vulnerability scans. The minimum supported Go version remains `1.26.8`.
+* Prefer Go `1.27.2` for native and WASM development and use it for hosted
+  CI and Pages checks, including vulnerability scans. Plain `task ci` selects
+  the patched toolchain with `GOTOOLCHAIN=auto`. The minimum supported Go
+  version remains `1.26.8`.
 
 ## v0.1.1 (2026-10-07)
 

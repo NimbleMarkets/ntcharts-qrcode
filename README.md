@@ -53,6 +53,8 @@ experimental companion to [NTCharts](https://github.com/NimbleMarkets/ntcharts).
 ## Quickstart
 
 Requires Go 1.26.8+ and Bubble Tea v2. The API is experimental.
+Development builds prefer Go 1.27.2 or newer; Go selects it automatically
+with the default `GOTOOLCHAIN=auto` setting.
 
 As of v0.2.0, the module is `nimbleterminal.dev/ntqrcode`. When upgrading
 from v0.1.x, replace `github.com/NimbleMarkets/ntcharts-qrcode/qrcode` imports

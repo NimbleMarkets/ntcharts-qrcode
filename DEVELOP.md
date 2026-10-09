@@ -114,8 +114,11 @@ Encoder review (October 2026):
 
 GitHub Actions uses `actions/checkout@v7`, `actions/setup-go@v7`, and
 `go-task/setup-task@v2`, following the main NTCharts repo. CI invokes `task ci`
-so local and hosted checks stay in sync. Hosted checks use Go 1.27.2; run
-`GOTOOLCHAIN=go1.27.2 task ci` to match them locally. `TestDownstreamConsumer` creates a
+so local and hosted checks stay in sync. Hosted checks use Go 1.27.2. Both
+`go.mod` and `wasm.work` prefer Go 1.27.2 or newer, so plain `task ci` selects
+a patched toolchain with the default `GOTOOLCHAIN=auto` setting. Explicit
+`GOTOOLCHAIN` overrides take precedence; use `GOTOOLCHAIN=go1.27.2 task ci`
+to match hosted checks exactly. `TestDownstreamConsumer` creates a
 separate main module with `GOWORK=off` and only a local replacement for this
 library; it verifies dense encoding and capacity rejection without inheriting
 any of the library's dependency replacements.

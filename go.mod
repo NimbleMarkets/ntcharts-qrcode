@@ -2,6 +2,8 @@ module nimbleterminal.dev/ntqrcode
 
 go 1.26.8
 
+toolchain go1.27.2
+
 tool github.com/NimbleMarkets/go-booba/cmd/booba-assets
 
 require (
